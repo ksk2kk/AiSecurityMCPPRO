@@ -1,0 +1,683 @@
+export type Language = 'zh' | 'en';
+
+export interface Translations {
+  common: {
+    loading: string;
+    done: string;
+    error: string;
+    warning: string;
+    info: string;
+    success: string;
+    failed: string;
+    yes: string;
+    no: string;
+    ok: string;
+    cancel: string;
+    continue: string;
+    back: string;
+    next: string;
+    exit: string;
+    help: string;
+    status: string;
+    progress: string;
+    completed: string;
+    pending: string;
+    running: string;
+    ready: string;
+    unknown: string;
+    none: string;
+    all: string;
+    total: string;
+    of: string;
+    seconds: string;
+    minutes: string;
+    hours: string;
+    days: string;
+  };
+
+  system: {
+    initializing: string;
+    initialized: string;
+    initializationFailed: string;
+    checkingModelProviders: string;
+    noModelProviders: string;
+    availableProviders: string;
+    switchingProvider: string;
+    providerUnavailable: string;
+  };
+
+  context: {
+    status: string;
+    contextStatus: string;
+    tokens: string;
+    currentTokens: string;
+    maxTokens: string;
+    usagePercentage: string;
+    nearLimit: string;
+    overLimit: string;
+    compressing: string;
+    compressionComplete: string;
+    generatingSummary: string;
+    summaryGenerated: string;
+  };
+
+  tools: {
+    tools: string;
+    checking: string;
+    checkingInstallation: string;
+    installed: string;
+    notInstalled: string;
+    installing: string;
+    installingTool: string;
+    installComplete: string;
+    installFailed: string;
+    alreadyInstalled: string;
+    downloading: string;
+    verifying: string;
+    phaseChecking: string;
+    phaseDownloading: string;
+    phaseInstalling: string;
+    phaseVerifying: string;
+    phaseComplete: string;
+    phaseFailed: string;
+    noInstallCommand: string;
+    executing: string;
+    executingTool: string;
+    executionComplete: string;
+    executionFailed: string;
+    monitoringLogs: string;
+    exitCode: string;
+    output: string;
+    errorOutput: string;
+    toolNotFound: string;
+    toolsDirectory: string;
+    installAll: string;
+    installedCount: string;
+    failedCount: string;
+  };
+
+  todo: {
+    todoList: string;
+    activeTodoList: string;
+    noActiveTodoList: string;
+    generatingTodoList: string;
+    todoListGenerated: string;
+    generatingFromContext: string;
+    noTodoGenerated: string;
+    startingTask: string;
+    completingTask: string;
+    failingTask: string;
+    progress: string;
+    taskProgress: string;
+    todoListComplete: string;
+    todoListFailed: string;
+    taskCount: string;
+    completedCount: string;
+    pendingCount: string;
+    inProgressCount: string;
+    failedCount: string;
+    items: string;
+    task: string;
+  };
+
+  security: {
+    vulnerabilities: string;
+    vulnerabilitiesFound: string;
+    noVulnerabilities: string;
+    analyzing: string;
+    analyzingOutput: string;
+    analysisComplete: string;
+    generatingReport: string;
+    reportGenerated: string;
+    critical: string;
+    high: string;
+    medium: string;
+    low: string;
+    info: string;
+    severity: string;
+    target: string;
+    affectedTarget: string;
+    description: string;
+    evidence: string;
+    discoveredBy: string;
+    discoveredAt: string;
+    status: string;
+    new: string;
+    confirmed: string;
+    exploited: string;
+    remediated: string;
+    falsePositive: string;
+  };
+
+  requirements: {
+    analyzingRequest: string;
+    analysisComplete: string;
+    needClarification: string;
+    pendingClarifications: string;
+    answer: string;
+    answered: string;
+    skipped: string;
+    pending: string;
+    targets: string;
+    scanType: string;
+    depth: string;
+    quick: string;
+    standard: string;
+    deep: string;
+    riskTolerance: string;
+    low: string;
+    medium: string;
+    high: string;
+    full: string;
+    recon: string;
+    vulnerability: string;
+    exploit: string;
+    custom: string;
+    couldNotParse: string;
+    fallbackAnalysis: string;
+  };
+
+  agent: {
+    welcome: string;
+    banner: string;
+    availableCommands: string;
+    quickStart: string;
+    enterCommand: string;
+    processing: string;
+    response: string;
+    goodbye: string;
+    exampleUsage: string;
+    scanExample: string;
+    fullAssessmentExample: string;
+  };
+
+  commands: {
+    statusDesc: string;
+    contextDesc: string;
+    toolsDesc: string;
+    toolsListDesc: string;
+    toolsInstallDesc: string;
+    toolsInstallAllDesc: string;
+    toolsCheckDesc: string;
+    modelsDesc: string;
+    modelsListDesc: string;
+    modelsSwitchDesc: string;
+    vulnsDesc: string;
+    todoDesc: string;
+    todoListDesc: string;
+    todoShowDesc: string;
+    executeDesc: string;
+    clearDesc: string;
+    configDesc: string;
+    helpDesc: string;
+    exitDesc: string;
+    unknownCommand: string;
+  };
+
+  cli: {
+    welcomeMessage: string;
+    availableCommandsTitle: string;
+    coreFeatures: string;
+    modelManagement: string;
+    toolManagement: string;
+    taskManagement: string;
+    securityFeatures: string;
+    usageTips: string;
+    tip1: string;
+    tip2: string;
+    tip3: string;
+    tip4: string;
+    scanCommands: string;
+    scanExample1: string;
+    scanExample2: string;
+  };
+}
+
+export const translations: Record<Language, Translations> = {
+  zh: {
+    common: {
+      loading: '加载中',
+      done: '完成',
+      error: '错误',
+      warning: '警告',
+      info: '信息',
+      success: '成功',
+      failed: '失败',
+      yes: '是',
+      no: '否',
+      ok: '确定',
+      cancel: '取消',
+      continue: '继续',
+      back: '返回',
+      next: '下一步',
+      exit: '退出',
+      help: '帮助',
+      status: '状态',
+      progress: '进度',
+      completed: '已完成',
+      pending: '待处理',
+      running: '运行中',
+      ready: '就绪',
+      unknown: '未知',
+      none: '无',
+      all: '全部',
+      total: '总计',
+      of: '的',
+      seconds: '秒',
+      minutes: '分钟',
+      hours: '小时',
+      days: '天'
+    },
+    system: {
+      initializing: '正在初始化...',
+      initialized: '初始化完成',
+      initializationFailed: '初始化失败',
+      checkingModelProviders: '正在检查模型提供商...',
+      noModelProviders: '没有可用的模型提供商。请启动 LMStudio 或 Ollama。',
+      availableProviders: '可用的模型提供商',
+      switchingProvider: '正在切换提供商',
+      providerUnavailable: '提供商不可用'
+    },
+    context: {
+      status: '上下文状态',
+      contextStatus: '上下文状态',
+      tokens: '令牌',
+      currentTokens: '当前令牌',
+      maxTokens: '最大令牌',
+      usagePercentage: '使用百分比',
+      nearLimit: '接近上限',
+      overLimit: '超出上限',
+      compressing: '正在压缩...',
+      compressionComplete: '压缩完成',
+      generatingSummary: '正在生成摘要...',
+      summaryGenerated: '摘要已生成'
+    },
+    tools: {
+      tools: '工具',
+      checking: '检查中',
+      checkingInstallation: '检查安装状态...',
+      installed: '已安装',
+      notInstalled: '未安装',
+      installing: '安装中',
+      installingTool: '正在安装工具',
+      installComplete: '安装完成',
+      installFailed: '安装失败',
+      alreadyInstalled: '已安装',
+      downloading: '下载中',
+      verifying: '验证中',
+      phaseChecking: '检查中',
+      phaseDownloading: '下载中',
+      phaseInstalling: '安装中',
+      phaseVerifying: '验证中',
+      phaseComplete: '完成',
+      phaseFailed: '失败',
+      noInstallCommand: '没有安装命令',
+      executing: '执行中',
+      executingTool: '正在执行工具',
+      executionComplete: '执行完成',
+      executionFailed: '执行失败',
+      monitoringLogs: '正在监视日志...',
+      exitCode: '退出代码',
+      output: '输出',
+      errorOutput: '错误输出',
+      toolNotFound: '工具未找到',
+      toolsDirectory: '工具目录',
+      installAll: '安装全部',
+      installedCount: '已安装数量',
+      failedCount: '失败数量'
+    },
+    todo: {
+      todoList: '任务列表',
+      activeTodoList: '活动任务列表',
+      noActiveTodoList: '没有活动的任务列表',
+      generatingTodoList: '正在生成任务列表...',
+      todoListGenerated: '任务列表已生成',
+      generatingFromContext: '从上下文生成中...',
+      noTodoGenerated: '未生成任务',
+      startingTask: '开始任务',
+      completingTask: '完成任务',
+      failingTask: '任务失败',
+      progress: '进度',
+      taskProgress: '任务进度',
+      todoListComplete: '任务列表完成',
+      todoListFailed: '任务列表失败',
+      taskCount: '任务数量',
+      completedCount: '已完成数量',
+      pendingCount: '待处理数量',
+      inProgressCount: '进行中数量',
+      failedCount: '失败数量',
+      items: '项',
+      task: '任务'
+    },
+    security: {
+      vulnerabilities: '漏洞',
+      vulnerabilitiesFound: '发现的漏洞',
+      noVulnerabilities: '未发现漏洞',
+      analyzing: '分析中',
+      analyzingOutput: '分析输出中...',
+      analysisComplete: '分析完成',
+      generatingReport: '正在生成报告...',
+      reportGenerated: '报告已生成',
+      critical: '严重',
+      high: '高危',
+      medium: '中危',
+      low: '低危',
+      info: '信息',
+      severity: '严重程度',
+      target: '目标',
+      affectedTarget: '受影响目标',
+      description: '描述',
+      evidence: '证据',
+      discoveredBy: '发现者',
+      discoveredAt: '发现时间',
+      status: '状态',
+      new: '新发现',
+      confirmed: '已确认',
+      exploited: '已利用',
+      remediated: '已修复',
+      falsePositive: '误报'
+    },
+    requirements: {
+      analyzingRequest: '分析请求中...',
+      analysisComplete: '分析完成',
+      needClarification: '需要更多信息',
+      pendingClarifications: '待澄清的问题',
+      answer: '回答',
+      answered: '已回答',
+      skipped: '已跳过',
+      pending: '待处理',
+      targets: '目标',
+      scanType: '扫描类型',
+      depth: '深度',
+      quick: '快速',
+      standard: '标准',
+      deep: '深度',
+      riskTolerance: '风险偏好',
+      low: '低',
+      medium: '中',
+      high: '高',
+      full: '完整',
+      recon: '侦查',
+      vulnerability: '漏洞',
+      exploit: '利用',
+      custom: '自定义',
+      couldNotParse: '无法解析',
+      fallbackAnalysis: '备用分析'
+    },
+    agent: {
+      welcome: '欢迎使用 AI Security MCP',
+      banner: 'AI Security MCP - 自动化漏洞挖掘系统',
+      availableCommands: '可用命令',
+      quickStart: '快速开始',
+      enterCommand: '请输入命令或直接描述你的需求',
+      processing: '正在处理...',
+      response: '回复',
+      goodbye: '再见！',
+      exampleUsage: '使用示例',
+      scanExample: '扫描 example.com 的 Web 漏洞',
+      fullAssessmentExample: '对 192.168.1.1 进行完整的安全评估'
+    },
+    commands: {
+      statusDesc: '显示系统状态',
+      contextDesc: '显示上下文信息',
+      toolsDesc: '管理工具',
+      toolsListDesc: '列出所有工具',
+      toolsInstallDesc: '安装指定工具',
+      toolsInstallAllDesc: '安装所有工具',
+      toolsCheckDesc: '检查工具状态',
+      modelsDesc: '管理模型提供商',
+      modelsListDesc: '列出所有提供商',
+      modelsSwitchDesc: '切换提供商',
+      vulnsDesc: '显示发现的漏洞',
+      todoDesc: '管理任务列表',
+      todoListDesc: '列出所有任务列表',
+      todoShowDesc: '显示当前任务详情',
+      executeDesc: '执行当前任务列表',
+      clearDesc: '清除上下文',
+      configDesc: '显示配置',
+      helpDesc: '显示帮助',
+      exitDesc: '退出程序',
+      unknownCommand: '未知命令'
+    },
+    cli: {
+      welcomeMessage: '正在初始化... 请确保 LMStudio 或 Ollama 正在运行。',
+      availableCommandsTitle: '可用命令',
+      coreFeatures: '核心功能',
+      modelManagement: '模型管理',
+      toolManagement: '工具管理',
+      taskManagement: '任务管理',
+      securityFeatures: '安全功能',
+      usageTips: '使用提示',
+      tip1: '直接输入你的需求，AI 会自动分析并生成任务计划',
+      tip2: '使用 /tools 命令安装安全工具',
+      tip3: '生成任务列表后，使用 /execute 执行',
+      tip4: '使用 /vulns 查看发现的漏洞',
+      scanCommands: '扫描命令',
+      scanExample1: 'npm run dev 或 node dist/index.js interactive',
+      scanExample2: 'node dist/index.js scan example.com --type full'
+    }
+  },
+  en: {
+    common: {
+      loading: 'Loading',
+      done: 'Done',
+      error: 'Error',
+      warning: 'Warning',
+      info: 'Info',
+      success: 'Success',
+      failed: 'Failed',
+      yes: 'Yes',
+      no: 'No',
+      ok: 'OK',
+      cancel: 'Cancel',
+      continue: 'Continue',
+      back: 'Back',
+      next: 'Next',
+      exit: 'Exit',
+      help: 'Help',
+      status: 'Status',
+      progress: 'Progress',
+      completed: 'Completed',
+      pending: 'Pending',
+      running: 'Running',
+      ready: 'Ready',
+      unknown: 'Unknown',
+      none: 'None',
+      all: 'All',
+      total: 'Total',
+      of: 'of',
+      seconds: 'seconds',
+      minutes: 'minutes',
+      hours: 'hours',
+      days: 'days'
+    },
+    system: {
+      initializing: 'Initializing...',
+      initialized: 'Initialized',
+      initializationFailed: 'Initialization failed',
+      checkingModelProviders: 'Checking model providers...',
+      noModelProviders: 'No model providers available. Please start LMStudio or Ollama.',
+      availableProviders: 'Available model providers',
+      switchingProvider: 'Switching provider',
+      providerUnavailable: 'Provider unavailable'
+    },
+    context: {
+      status: 'Status',
+      contextStatus: 'Context Status',
+      tokens: 'tokens',
+      currentTokens: 'Current tokens',
+      maxTokens: 'Max tokens',
+      usagePercentage: 'Usage percentage',
+      nearLimit: 'Near limit',
+      overLimit: 'Over limit',
+      compressing: 'Compressing...',
+      compressionComplete: 'Compression complete',
+      generatingSummary: 'Generating summary...',
+      summaryGenerated: 'Summary generated'
+    },
+    tools: {
+      tools: 'Tools',
+      checking: 'Checking',
+      checkingInstallation: 'Checking installation...',
+      installed: 'Installed',
+      notInstalled: 'Not installed',
+      installing: 'Installing',
+      installingTool: 'Installing tool',
+      installComplete: 'Install complete',
+      installFailed: 'Install failed',
+      alreadyInstalled: 'Already installed',
+      downloading: 'Downloading',
+      verifying: 'Verifying',
+      phaseChecking: 'Checking',
+      phaseDownloading: 'Downloading',
+      phaseInstalling: 'Installing',
+      phaseVerifying: 'Verifying',
+      phaseComplete: 'Complete',
+      phaseFailed: 'Failed',
+      noInstallCommand: 'No install command',
+      executing: 'Executing',
+      executingTool: 'Executing tool',
+      executionComplete: 'Execution complete',
+      executionFailed: 'Execution failed',
+      monitoringLogs: 'Monitoring logs...',
+      exitCode: 'Exit code',
+      output: 'Output',
+      errorOutput: 'Error output',
+      toolNotFound: 'Tool not found',
+      toolsDirectory: 'Tools directory',
+      installAll: 'Install all',
+      installedCount: 'Installed count',
+      failedCount: 'Failed count'
+    },
+    todo: {
+      todoList: 'Todo List',
+      activeTodoList: 'Active Todo List',
+      noActiveTodoList: 'No active todo list',
+      generatingTodoList: 'Generating todo list...',
+      todoListGenerated: 'Todo list generated',
+      generatingFromContext: 'Generating from context...',
+      noTodoGenerated: 'No todo generated',
+      startingTask: 'Starting task',
+      completingTask: 'Completing task',
+      failingTask: 'Task failing',
+      progress: 'Progress',
+      taskProgress: 'Task progress',
+      todoListComplete: 'Todo list complete',
+      todoListFailed: 'Todo list failed',
+      taskCount: 'Task count',
+      completedCount: 'Completed count',
+      pendingCount: 'Pending count',
+      inProgressCount: 'In progress count',
+      failedCount: 'Failed count',
+      items: 'items',
+      task: 'Task'
+    },
+    security: {
+      vulnerabilities: 'Vulnerabilities',
+      vulnerabilitiesFound: 'Vulnerabilities found',
+      noVulnerabilities: 'No vulnerabilities found',
+      analyzing: 'Analyzing',
+      analyzingOutput: 'Analyzing output...',
+      analysisComplete: 'Analysis complete',
+      generatingReport: 'Generating report...',
+      reportGenerated: 'Report generated',
+      critical: 'Critical',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
+      info: 'Info',
+      severity: 'Severity',
+      target: 'Target',
+      affectedTarget: 'Affected target',
+      description: 'Description',
+      evidence: 'Evidence',
+      discoveredBy: 'Discovered by',
+      discoveredAt: 'Discovered at',
+      status: 'Status',
+      new: 'New',
+      confirmed: 'Confirmed',
+      exploited: 'Exploited',
+      remediated: 'Remediated',
+      falsePositive: 'False positive'
+    },
+    requirements: {
+      analyzingRequest: 'Analyzing request...',
+      analysisComplete: 'Analysis complete',
+      needClarification: 'Need more information',
+      pendingClarifications: 'Pending clarifications',
+      answer: 'Answer',
+      answered: 'Answered',
+      skipped: 'Skipped',
+      pending: 'Pending',
+      targets: 'Targets',
+      scanType: 'Scan type',
+      depth: 'Depth',
+      quick: 'Quick',
+      standard: 'Standard',
+      deep: 'Deep',
+      riskTolerance: 'Risk tolerance',
+      low: 'Low',
+      medium: 'Medium',
+      high: 'High',
+      full: 'Full',
+      recon: 'Recon',
+      vulnerability: 'Vulnerability',
+      exploit: 'Exploit',
+      custom: 'Custom',
+      couldNotParse: 'Could not parse',
+      fallbackAnalysis: 'Fallback analysis'
+    },
+    agent: {
+      welcome: 'Welcome to AI Security MCP',
+      banner: 'AI Security MCP - Automated Vulnerability Mining System',
+      availableCommands: 'Available Commands',
+      quickStart: 'Quick Start',
+      enterCommand: 'Enter a command or describe your requirement directly',
+      processing: 'Processing...',
+      response: 'Response',
+      goodbye: 'Goodbye!',
+      exampleUsage: 'Example Usage',
+      scanExample: 'Scan example.com for web vulnerabilities',
+      fullAssessmentExample: 'Perform full security assessment on 192.168.1.1'
+    },
+    commands: {
+      statusDesc: 'Show system status',
+      contextDesc: 'Show context information',
+      toolsDesc: 'Manage tools',
+      toolsListDesc: 'List all tools',
+      toolsInstallDesc: 'Install specified tool',
+      toolsInstallAllDesc: 'Install all tools',
+      toolsCheckDesc: 'Check tool status',
+      modelsDesc: 'Manage model providers',
+      modelsListDesc: 'List all providers',
+      modelsSwitchDesc: 'Switch provider',
+      vulnsDesc: 'Show discovered vulnerabilities',
+      todoDesc: 'Manage todo lists',
+      todoListDesc: 'List all todo lists',
+      todoShowDesc: 'Show current todo details',
+      executeDesc: 'Execute current todo list',
+      clearDesc: 'Clear context',
+      configDesc: 'Show configuration',
+      helpDesc: 'Show help',
+      exitDesc: 'Exit program',
+      unknownCommand: 'Unknown command'
+    },
+    cli: {
+      welcomeMessage: 'Initializing... Please ensure LMStudio or Ollama is running.',
+      availableCommandsTitle: 'Available Commands',
+      coreFeatures: 'Core Features',
+      modelManagement: 'Model Management',
+      toolManagement: 'Tool Management',
+      taskManagement: 'Task Management',
+      securityFeatures: 'Security Features',
+      usageTips: 'Usage Tips',
+      tip1: 'Enter your requirement directly, AI will analyze and generate a task plan',
+      tip2: 'Use /tools command to install security tools',
+      tip3: 'After generating a todo list, use /execute to run it',
+      tip4: 'Use /vulns to view discovered vulnerabilities',
+      scanCommands: 'Scan Commands',
+      scanExample1: 'npm run dev or node dist/index.js interactive',
+      scanExample2: 'node dist/index.js scan example.com --type full'
+    }
+  }
+};

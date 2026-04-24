@@ -8,6 +8,7 @@ import { getToolExecutor } from '../tools/toolExecutor';
 import { getVulnerabilityAnalyzer } from '../vulnerability/vulnerabilityAnalyzer';
 import { getRequirementAnalyzer } from '../requirements/requirementAnalyzer';
 import { getConfig } from '../config';
+import { getI18n } from '../i18n';
 import { logInfo, logWarn, logDebug, logError } from '../utils/logger';
 
 export interface AgentResponse {
@@ -39,18 +40,8 @@ export interface AgentResponse {
   }>;
 }
 
-export class SecurityAgent {
-  private static instance: SecurityAgent;
-  private modelManager = getModelManager();
-  private contextManager = getContextManager();
-  private todoManager = getTodoManager();
-  private todoExecutor = getTodoExecutor();
-  private toolRegistry = getToolRegistry();
-  private toolExecutor = getToolExecutor();
-  private vulnerabilityAnalyzer = getVulnerabilityAnalyzer();
-  private requirementAnalyzer = getRequirementAnalyzer();
-  
-  private systemPrompt: string = `你是一个专业的安全专家AI助手，专注于漏洞挖掘和安全评估。
+const systemPrompts: Record<string, string> = {
+  zh: `你是一个专业的安全专家AI助手，专注于漏洞挖掘和安全评估。
 
 你的核心能力：
 1. 自动分析用户需求并生成详细的任务计划
@@ -87,8 +78,60 @@ export class SecurityAgent {
 - nuclei: 基于模板的漏洞扫描
 - wpscan: WordPress安全扫描
 
-注意：在执行任何工具之前，确保目标已经明确指定。`;
+注意：在执行任何工具之前，确保目标已经明确指定。`,
 
+  en: `You are a professional security expert AI assistant focused on vulnerability mining and security assessment.
+
+Your core capabilities:
+1. Automatically analyze user requirements and generate detailed task plans
+2. Use various security tools for scanning and testing
+3. Automatically manage conversation context, including compression and summarization
+4. Display context usage in real-time
+5. Proactively ask users when information is insufficient
+6. Detect and report vulnerabilities
+
+Working principles:
+- Security first: In safe mode, only perform non-intrusive scans
+- Precision: Use available tools and interpret results correctly
+- Transparency: Show what you're doing and why
+- Proactive: Ask for more information when needed
+- Responsible: Do not perform dangerous operations unless explicitly authorized
+
+When a user requests a security scan:
+1. First analyze requirements, identify targets and scan type
+2. If information is incomplete, ask the user for clarification
+3. Generate a detailed todo list
+4. Execute tasks in order
+5. Analyze results and report vulnerabilities
+6. Provide remediation suggestions
+
+You have access to the following tools (via function calls):
+- nmap: Port scanning and service identification
+- nikto: Web server vulnerability scanning
+- sqlmap: SQL injection detection
+- gobuster: Directory and DNS busting
+- whatweb: Web technology identification
+- testssl: SSL/TLS security testing
+- subfinder: Subdomain discovery
+- httpx: HTTP probing
+- nuclei: Template-based vulnerability scanning
+- wpscan: WordPress security scanning
+
+Note: Before executing any tool, ensure the target is clearly specified.`
+};
+
+export class SecurityAgent {
+  private static instance: SecurityAgent;
+  private modelManager = getModelManager();
+  private contextManager = getContextManager();
+  private todoManager = getTodoManager();
+  private todoExecutor = getTodoExecutor();
+  private toolRegistry = getToolRegistry();
+  private toolExecutor = getToolExecutor();
+  private vulnerabilityAnalyzer = getVulnerabilityAnalyzer();
+  private requirementAnalyzer = getRequirementAnalyzer();
+  private i18n = getI18n();
+  
   private initialized = false;
   
   private constructor() {}
@@ -98,6 +141,11 @@ export class SecurityAgent {
       SecurityAgent.instance = new SecurityAgent();
     }
     return SecurityAgent.instance;
+  }
+  
+  private getSystemPrompt(): string {
+    const lang = this.i18n.getLanguage();
+    return systemPrompts[lang] || systemPrompts['en'];
   }
   
   async initialize(): Promise<void> {
@@ -131,7 +179,7 @@ export class SecurityAgent {
     // Add system prompt to context
     this.contextManager.addMessage({
       role: 'system',
-      content: this.systemPrompt
+      content: this.getSystemPrompt()
     });
     
     this.initialized = true;
@@ -323,17 +371,25 @@ export class SecurityAgent {
   private generateClarificationResponse(
     clarifications: Array<{ id: string; question: string; options?: string[] }>
   ): string {
-    let response = '我需要更多信息来帮助你完成这个任务：\n\n';
+    const isChinese = this.i18n.isChinese();
+    
+    let response = isChinese 
+      ? '我需要更多信息来帮助你完成这个任务：\n\n'
+      : 'I need more information to help you complete this task:\n\n';
     
     clarifications.forEach((c, i) => {
       response += `${i + 1}. ${c.question}\n`;
       if (c.options && c.options.length > 0) {
-        response += `   选项: ${c.options.join(', ')}\n`;
+        response += isChinese 
+          ? `   选项: ${c.options.join(', ')}\n`
+          : `   Options: ${c.options.join(', ')}\n`;
       }
       response += '\n';
     });
     
-    response += '请提供上述信息，或者告诉我你想如何进行。';
+    response += isChinese
+      ? '请提供上述信息，或者告诉我你想如何进行。'
+      : 'Please provide the above information, or tell me how you want to proceed.';
     
     return response;
   }
@@ -429,9 +485,13 @@ export class SecurityAgent {
   
   async answerClarification(clarificationId: string, answer: string): Promise<AgentResponse> {
     const analysis = await this.requirementAnalyzer.answerClarification(clarificationId, answer);
+    const isChinese = this.i18n.isChinese();
     
     if (!analysis) {
-      return this.buildResponse('未找到对应的澄清问题。请重新提供信息。');
+      const msg = isChinese 
+        ? '未找到对应的澄清问题。请重新提供信息。'
+        : 'No matching clarification found. Please provide information again.';
+      return this.buildResponse(msg);
     }
     
     // Add to context
@@ -442,7 +502,7 @@ export class SecurityAgent {
     
     this.contextManager.addMessage({
       role: 'assistant',
-      content: '收到，我已经记录了这些信息。'
+      content: isChinese ? '收到，我已经记录了这些信息。' : 'Received, I have recorded this information.'
     });
     
     const pending = this.requirementAnalyzer.getPendingClarifications();
@@ -468,10 +528,17 @@ export class SecurityAgent {
       this.todoManager.setActiveTodoList(todoList.id);
     }
     
-    return this.buildResponse(
-      '好的，我已经收集到了所有需要的信息。我已经为你生成了一个任务计划。' +
-      (todoList ? `\n\n任务计划: ${todoList.title}\n包含 ${todoList.items.length} 个任务。` : '')
-    );
+    const baseMsg = isChinese
+      ? '好的，我已经收集到了所有需要的信息。我已经为你生成了一个任务计划。'
+      : 'Good, I have collected all the necessary information. I have generated a task plan for you.';
+    
+    const todoMsg = todoList 
+      ? (isChinese 
+          ? `\n\n任务计划: ${todoList.title}\n包含 ${todoList.items.length} 个任务。`
+          : `\n\nTask plan: ${todoList.title}\nContains ${todoList.items.length} tasks.`)
+      : '';
+    
+    return this.buildResponse(baseMsg + todoMsg);
   }
   
   getContextStatus(): string {
@@ -491,7 +558,7 @@ export class SecurityAgent {
     // Re-add system prompt
     this.contextManager.addMessage({
       role: 'system',
-      content: this.systemPrompt
+      content: this.getSystemPrompt()
     });
     
     logInfo('SecurityAgent', 'Context cleared');

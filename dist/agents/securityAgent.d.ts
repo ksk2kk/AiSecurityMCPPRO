@@ -37,10 +37,11 @@ export declare class SecurityAgent {
     private toolExecutor;
     private vulnerabilityAnalyzer;
     private requirementAnalyzer;
-    private systemPrompt;
+    private i18n;
     private initialized;
     private constructor();
     static getInstance(): SecurityAgent;
+    private getSystemPrompt;
     initialize(): Promise<void>;
     processMessage(userMessage: string): Promise<AgentResponse>;
     private executeToolCall;

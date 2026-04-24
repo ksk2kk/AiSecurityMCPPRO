@@ -45,3 +45,135 @@
 2026-04-24 10:28:57 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
 2026-04-24 10:28:57 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
 2026-04-24 10:28:57 [debug]: 	[TokenCounter] Total message count for 2 messages: 168 {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Registered model provider: lmstudio (lmstudio) {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Registered model provider: ollama (ollama) {}
+2026-04-24 13:27:14 [debug]: 	[ToolRegistry] Initialized 10 default tools {}
+2026-04-24 13:27:14 [info]: 	[SecurityAgent] Initializing security agent... {}
+2026-04-24 13:27:14 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:27:14 [info]: 	[ContextManager] Initialized with context window: 4096 tokens {}
+2026-04-24 13:27:14 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:27:14 [info]: 	[LMStudioAdapter] LMStudio availability check: available {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Provider lmstudio: available {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 13:27:14 [info]: 	[SecurityAgent] Available model providers: lmstudio {}
+2026-04-24 13:27:14 [debug]: 	[ContextManager] Added message (role: system), total: 1 {}
+2026-04-24 13:27:14 [info]: 	[SecurityAgent] Security agent initialized successfully {}
+2026-04-24 13:27:14 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:27:14 [info]: 	[LMStudioAdapter] LMStudio availability check: available {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Provider lmstudio: available {}
+2026-04-24 13:27:14 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:27:14 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 13:27:19 [info]: 	[SecurityAgent] Processing user message: 你好... {}
+2026-04-24 13:27:19 [debug]: 	[ContextManager] Added message (role: user), total: 2 {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:27:19 [debug]: 	[TokenCounter] Total message count for 2 messages: 168 {}
+2026-04-24 13:27:19 [info]: 	[RequirementAnalyzer] Analyzing request: 你好... {}
+2026-04-24 13:27:19 [info]: 	[ModelAdapter] Sending chat completion request to model: local-model {}
+2026-04-24 13:27:19 [debug]: 	[ModelAdapter] Request details {"data":{"messageCount":2,"hasTools":false,"maxTokens":2048}}
+2026-04-24 13:27:19 [debug]: 	[ModelAdapter] Request: POST /chat/completions {}
+2026-04-24 13:28:19 [info]: 	[SecurityAgent] Need 1 clarifications {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:28:19 [debug]: 	[TokenCounter] Total message count for 2 messages: 168 {}
+2026-04-24 13:33:01 [info]: 	[SecurityAgent] Processing user message: exit... {}
+2026-04-24 13:33:01 [debug]: 	[ContextManager] Added message (role: user), total: 3 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:33:01 [debug]: 	[TokenCounter] Total message count for 3 messages: 176 {}
+2026-04-24 13:33:01 [info]: 	[RequirementAnalyzer] Analyzing request: exit... {}
+2026-04-24 13:33:01 [info]: 	[ModelAdapter] Sending chat completion request to model: local-model {}
+2026-04-24 13:33:01 [debug]: 	[ModelAdapter] Request details {"data":{"messageCount":2,"hasTools":false,"maxTokens":2048}}
+2026-04-24 13:33:01 [debug]: 	[ModelAdapter] Request: POST /chat/completions {}
+2026-04-24 13:33:22 [info]: 	[ModelAdapter] Chat completion successful. Usage: {"prompt_tokens":760,"completion_tokens":107,"total_tokens":867,"completion_tokens_details":{"reasoning_tokens":0}} {}
+2026-04-24 13:33:22 [info]: 	[RequirementAnalyzer] Analysis complete. Targets: 0, Type: custom, Complete: false, Questions: 0 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 13:33:22 [debug]: 	[TokenCounter] Total message count for 3 messages: 176 {}
+2026-04-24 13:33:22 [info]: 	[ModelAdapter] Sending chat completion request to model: local-model {}
+2026-04-24 13:33:22 [debug]: 	[ModelAdapter] Request details {"data":{"messageCount":3,"hasTools":false,"maxTokens":2048}}
+2026-04-24 13:33:22 [debug]: 	[ModelAdapter] Request: POST /chat/completions {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Registered model provider: lmstudio (lmstudio) {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Registered model provider: ollama (ollama) {}
+2026-04-24 13:33:33 [info]: 	[TokenCounter] Using gpt-3-encoder for precise token counting {}
+2026-04-24 13:33:33 [debug]: 	[ToolRegistry] Initialized 10 default tools {}
+2026-04-24 13:33:33 [info]: 	[SecurityAgent] Initializing security agent... {}
+2026-04-24 13:33:33 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:33:33 [info]: 	[ContextManager] Initialized with context window: 4096 tokens {}
+2026-04-24 13:33:33 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:33:33 [info]: 	[LMStudioAdapter] LMStudio availability check: available {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Provider lmstudio: available {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 13:33:33 [info]: 	[SecurityAgent] Available model providers: lmstudio {}
+2026-04-24 13:33:33 [debug]: 	[ContextManager] Added message (role: system), total: 1 {}
+2026-04-24 13:33:33 [info]: 	[SecurityAgent] Security agent initialized successfully {}
+2026-04-24 13:33:33 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 13:33:33 [info]: 	[LMStudioAdapter] LMStudio availability check: available {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Provider lmstudio: available {}
+2026-04-24 13:33:33 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 6 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 967 tokens for text of 589 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Message token count: 973 (role: system) {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Total tokens for 1 messages: 976 {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 6 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 967 tokens for text of 589 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Message token count: 973 (role: system) {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Total tokens for 1 messages: 976 {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 6 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] gpt-3-encoder counted 967 tokens for text of 589 chars {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Message token count: 973 (role: system) {}
+2026-04-24 13:33:33 [debug]: 	[TokenCounter] Total tokens for 1 messages: 976 {}
+2026-04-24 13:34:30 [info]: 	[SecurityAgent] Processing user message: 你好，你自己下载一些必要的工具来为渗透测试做准备... {}
+2026-04-24 13:34:30 [debug]: 	[ContextManager] Added message (role: user), total: 2 {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 6 chars {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 967 tokens for text of 589 chars {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] Message token count: 973 (role: system) {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 4 chars {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 51 tokens for text of 24 chars {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] Message token count: 57 (role: user) {}
+2026-04-24 13:34:30 [debug]: 	[TokenCounter] Total tokens for 2 messages: 1033 {}
+2026-04-24 13:34:30 [info]: 	[RequirementAnalyzer] Analyzing request: 你好，你自己下载一些必要的工具来为渗透测试做准备... {}
+2026-04-24 13:34:30 [info]: 	[ModelAdapter] Sending chat completion request to model: local-model {}
+2026-04-24 13:34:30 [debug]: 	[ModelAdapter] Request details {"data":{"messageCount":2,"hasTools":false,"maxTokens":2048}}
+2026-04-24 13:34:30 [debug]: 	[ModelAdapter] Request: POST /chat/completions {}
+2026-04-24 13:35:30 [info]: 	[SecurityAgent] Need 1 clarifications {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 6 chars {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 967 tokens for text of 589 chars {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] Message token count: 973 (role: system) {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 1 tokens for text of 4 chars {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] gpt-3-encoder counted 51 tokens for text of 24 chars {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] Message token count: 57 (role: user) {}
+2026-04-24 13:35:30 [debug]: 	[TokenCounter] Total tokens for 2 messages: 1033 {}

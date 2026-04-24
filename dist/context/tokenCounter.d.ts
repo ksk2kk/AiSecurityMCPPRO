@@ -4,6 +4,7 @@ export declare class TokenCounter {
     private constructor();
     static getInstance(): TokenCounter;
     countTokens(text: string): number;
+    private countTokensFallback;
     countMessage(message: Message): number;
     countMessages(messages: Message[]): number;
     estimateMaxMessagesForTokens(messages: Message[], maxTokens: number, reserveTokens?: number): Message[];
