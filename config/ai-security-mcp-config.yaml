@@ -1,0 +1,62 @@
+modelProviders:
+  - name: lmstudio
+    type: lmstudio
+    baseUrl: http://localhost:1234/v1
+    defaultModel: local-model
+    maxContextWindow: 4096
+    maxOutputTokens: 2048
+  - name: ollama
+    type: ollama
+    baseUrl: http://localhost:11434/v1
+    defaultModel: llama2
+    maxContextWindow: 4096
+    maxOutputTokens: 2048
+activeProvider: lmstudio
+contextWindow:
+  maxTokens: 4096
+  warningThreshold: 0.7
+  autoCompression: true
+  compressionRules:
+    - id: rule-1
+      name: 轻度压缩
+      description: 当上下文使用达到70%时启用轻度压缩
+      triggerThreshold: 0.7
+      compressionRatio: 0.3
+      preserveSystemMessages: true
+      preserveRecentMessages: 10
+      enabled: true
+    - id: rule-2
+      name: 中度压缩
+      description: 当上下文使用达到85%时启用中度压缩
+      triggerThreshold: 0.85
+      compressionRatio: 0.5
+      preserveSystemMessages: true
+      preserveRecentMessages: 5
+      enabled: true
+    - id: rule-3
+      name: 紧急压缩
+      description: 当上下文使用达到95%时启用紧急压缩
+      triggerThreshold: 0.95
+      compressionRatio: 0.7
+      preserveSystemMessages: true
+      preserveRecentMessages: 3
+      enabled: true
+todoList:
+  autoGenerate: true
+  maxConcurrentTasks: 3
+  retryOnFailure: true
+  maxRetries: 3
+toolChain:
+  autoInstall: true
+  autoUpdate: true
+  logLevel: info
+  maxExecutionTime: 3600
+  toolsDirectory: C:\traework\AiSecurityMCP\tools
+security:
+  safeMode: true
+  allowDangerousTools: false
+  maxExploitAttempts: 0
+ui:
+  showContextLength: true
+  showTokenCount: true
+  colorOutput: true

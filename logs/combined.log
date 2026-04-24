@@ -1,0 +1,47 @@
+2026-04-24 10:23:01 [info]: 	[ModelManager] Registered model provider: lmstudio (lmstudio) {}
+2026-04-24 10:23:01 [info]: 	[ModelManager] Registered model provider: ollama (ollama) {}
+2026-04-24 10:23:01 [debug]: 	[ToolRegistry] Initialized 10 default tools {}
+2026-04-24 10:23:01 [info]: 	[SecurityAgent] Initializing security agent... {}
+2026-04-24 10:23:01 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 10:23:01 [info]: 	[ContextManager] Initialized with context window: 4096 tokens {}
+2026-04-24 10:23:01 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 10:23:01 [info]: 	[ModelManager] Provider lmstudio: unavailable {}
+2026-04-24 10:23:01 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 10:23:01 [debug]: 	[ContextManager] Added message (role: system), total: 1 {}
+2026-04-24 10:23:01 [info]: 	[SecurityAgent] Security agent initialized successfully {}
+2026-04-24 10:23:01 [debug]: 	[ModelAdapter] Request: GET /models {}
+2026-04-24 10:23:01 [info]: 	[ModelManager] Provider lmstudio: unavailable {}
+2026-04-24 10:23:01 [info]: 	[ModelManager] Provider ollama: unavailable {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 10:23:01 [debug]: 	[TokenCounter] Total message count for 1 messages: 160 {}
+2026-04-24 10:27:57 [info]: 	[SecurityAgent] Processing user message: 你好... {}
+2026-04-24 10:27:57 [debug]: 	[ContextManager] Added message (role: user), total: 2 {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 10:27:57 [debug]: 	[TokenCounter] Total message count for 2 messages: 168 {}
+2026-04-24 10:27:57 [info]: 	[RequirementAnalyzer] Analyzing request: 你好... {}
+2026-04-24 10:27:57 [info]: 	[ModelAdapter] Sending chat completion request to model: local-model {}
+2026-04-24 10:27:57 [debug]: 	[ModelAdapter] Request details {"data":{"messageCount":2,"hasTools":false,"maxTokens":2048}}
+2026-04-24 10:27:57 [debug]: 	[ModelAdapter] Request: POST /chat/completions {}
+2026-04-24 10:28:57 [info]: 	[SecurityAgent] Need 1 clarifications {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Token count for text (6 chars, 1 words): 2 {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Token count for text (589 chars, 70 words): 148 {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Message token count: 154 (role: system) {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Token count for text (4 chars, 1 words): 2 {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Token count for text (2 chars, 1 words): 2 {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Message token count: 8 (role: user) {}
+2026-04-24 10:28:57 [debug]: 	[TokenCounter] Total message count for 2 messages: 168 {}
