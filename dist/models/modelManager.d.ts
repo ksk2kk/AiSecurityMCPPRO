@@ -1,5 +1,5 @@
-import { ModelAdapter, ChatCompletionRequest, ChatCompletionResponse, ModelInfo, ModelCapabilities } from './types';
-import { ModelProvider } from '../types';
+import { ModelAdapter, ChatCompletionRequest, ChatCompletionResponse, ModelInfo, ModelCapabilities, ChatCompletionResult, ChatCompletionUsage } from './types';
+import { ModelProvider, ToolCall } from '../types';
 export declare class ModelManager {
     private adapters;
     private activeAdapterName;
@@ -15,10 +15,12 @@ export declare class ModelManager {
     getModelCapabilities(model?: string): Promise<ModelCapabilities>;
     getContextWindow(model?: string): Promise<number>;
     chatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse>;
+    chatCompletionWithUsage(request: ChatCompletionRequest): Promise<ChatCompletionResult>;
     chatCompletionStream(request: ChatCompletionRequest): AsyncIterable<{
         content?: string;
-        tool_calls?: unknown[];
+        tool_calls?: ToolCall[];
         finish_reason?: string;
+        usage?: ChatCompletionUsage;
     }>;
     addProvider(provider: ModelProvider): void;
     removeProvider(providerName: string): void;

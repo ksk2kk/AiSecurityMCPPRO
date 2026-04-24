@@ -5,10 +5,13 @@ import {
   ChatCompletionResponse,
   ModelInfo,
   ModelsResponse,
-  ModelCapabilities
+  ModelCapabilities,
+  ChatCompletionUsage,
+  ChatCompletionResult
 } from './types';
 import { ModelProvider, ToolCall } from '../types';
-import { logDebug, logError, logInfo } from '../utils/logger';
+import { logDebug, logError, logInfo, logWarn } from '../utils/logger';
+import { getTokenCounter } from '../context/tokenCounter';
 
 export abstract class BaseOpenAIAdapter implements ModelAdapter {
   readonly name: string;
@@ -18,6 +21,7 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
   readonly apiKey?: string;
   
   protected readonly client: AxiosInstance;
+  private lastUsage?: ChatCompletionUsage;
   
   constructor(provider: ModelProvider) {
     this.name = provider.name;
@@ -28,7 +32,7 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
     
     this.client = axios.create({
       baseURL: this.baseUrl,
-      timeout: 60000,
+      timeout: 120000,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -38,7 +42,6 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
       this.client.defaults.headers.common['Authorization'] = `Bearer ${this.apiKey}`;
     }
     
-    // Add request interceptor for logging
     this.client.interceptors.request.use((config) => {
       logDebug('ModelAdapter', `Request: ${config.method?.toUpperCase()} ${config.url}`);
       return config;
@@ -117,7 +120,24 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
         requestBody
       );
       
-      logInfo('ModelAdapter', `Chat completion successful. Usage: ${JSON.stringify(response.data.usage)}`);
+      this.lastUsage = response.data.usage;
+      
+      if (response.data.usage) {
+        logInfo('ModelAdapter', `Chat completion successful. Usage: prompt=${response.data.usage.prompt_tokens}, completion=${response.data.usage.completion_tokens}, total=${response.data.usage.total_tokens}`);
+      } else {
+        logWarn('ModelAdapter', 'API response missing usage data. LMStudio may require stream_options: { include_usage: true }');
+        const tokenCounter = getTokenCounter();
+        const estimatedPrompt = tokenCounter.countMessages(request.messages);
+        const estimatedCompletion = response.data.choices[0]?.message?.content 
+          ? tokenCounter.countTokens(response.data.choices[0].message.content) 
+          : 0;
+        this.lastUsage = {
+          prompt_tokens: estimatedPrompt,
+          completion_tokens: estimatedCompletion,
+          total_tokens: estimatedPrompt + estimatedCompletion
+        };
+        logInfo('ModelAdapter', `Using estimated usage: prompt=${this.lastUsage.prompt_tokens}, completion=${this.lastUsage.completion_tokens}, total=${this.lastUsage.total_tokens}`);
+      }
       
       return response.data;
     } catch (error) {
@@ -126,9 +146,27 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
     }
   }
   
+  async chatCompletionWithUsage(request: ChatCompletionRequest): Promise<ChatCompletionResult> {
+    const response = await this.chatCompletion(request);
+    
+    const choice = response.choices[0];
+    if (!choice) {
+      throw new Error('No response from model');
+    }
+    
+    const result: ChatCompletionResult = {
+      response,
+      content: choice.message.content || '',
+      toolCalls: choice.message.tool_calls,
+      usage: this.lastUsage
+    };
+    
+    return result;
+  }
+  
   async *chatCompletionStream(
     request: ChatCompletionRequest
-  ): AsyncIterable<{ content?: string; tool_calls?: ToolCall[]; finish_reason?: string }> {
+  ): AsyncIterable<{ content?: string; tool_calls?: ToolCall[]; finish_reason?: string; usage?: ChatCompletionUsage }> {
     const model = request.model || this.defaultModel;
     
     logInfo('ModelAdapter', `Starting streaming chat completion to model: ${model}`);
@@ -138,7 +176,8 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
       messages: request.messages,
       temperature: request.temperature ?? 0.7,
       max_tokens: request.max_tokens ?? 1024,
-      stream: true
+      stream: true,
+      stream_options: { include_usage: true }
     };
     
     if (request.tools && request.tools.length > 0) {
@@ -148,6 +187,22 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
       }
     }
     
+    if (request.top_p !== undefined) {
+      requestBody['top_p'] = request.top_p;
+    }
+    
+    if (request.frequency_penalty !== undefined) {
+      requestBody['frequency_penalty'] = request.frequency_penalty;
+    }
+    
+    if (request.presence_penalty !== undefined) {
+      requestBody['presence_penalty'] = request.presence_penalty;
+    }
+    
+    if (request.stop !== undefined) {
+      requestBody['stop'] = request.stop;
+    }
+    
     try {
       const response = await this.client.post('/chat/completions', requestBody, {
         responseType: 'stream'
@@ -155,6 +210,8 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
       
       const stream = response.data as NodeJS.ReadableStream;
       let buffer = '';
+      let fullContent = '';
+      let accumulatedToolCalls: ToolCall[] = [];
       
       for await (const chunk of stream) {
         buffer += chunk.toString();
@@ -165,19 +222,65 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
             if (data === '[DONE]') {
-              return;
+              continue;
             }
             
             try {
               const parsed = JSON.parse(data);
               const choice = parsed.choices?.[0];
               
-              if (choice) {
+              if (parsed.usage) {
+                this.lastUsage = parsed.usage as ChatCompletionUsage;
+                logInfo('ModelAdapter', `Stream usage: prompt=${this.lastUsage.prompt_tokens}, completion=${this.lastUsage.completion_tokens}, total=${this.lastUsage.total_tokens}`);
                 yield {
-                  content: choice.delta?.content,
-                  tool_calls: choice.delta?.tool_calls,
-                  finish_reason: choice.finish_reason
+                  usage: this.lastUsage
                 };
+              }
+              
+              if (choice) {
+                const delta = choice.delta;
+                if (!delta) continue;
+                
+                if (delta.content) {
+                  fullContent += delta.content;
+                  yield {
+                    content: delta.content
+                  };
+                }
+                
+                if (delta.tool_calls && delta.tool_calls.length > 0) {
+                  for (const toolCallDelta of delta.tool_calls) {
+                    const idx = toolCallDelta.index ?? 0;
+                    if (!accumulatedToolCalls[idx]) {
+                      accumulatedToolCalls[idx] = {
+                        id: '',
+                        type: 'function',
+                        function: { name: '', arguments: '' }
+                      };
+                    }
+                    
+                    if (toolCallDelta.id) {
+                      accumulatedToolCalls[idx].id = toolCallDelta.id;
+                    }
+                    if (toolCallDelta.function?.name) {
+                      accumulatedToolCalls[idx].function.name = toolCallDelta.function.name;
+                    }
+                    if (toolCallDelta.function?.arguments) {
+                      accumulatedToolCalls[idx].function.arguments += toolCallDelta.function.arguments;
+                    }
+                  }
+                  
+                  yield {
+                    tool_calls: accumulatedToolCalls.filter(tc => tc && tc.id)
+                  };
+                }
+                
+                if (choice.finish_reason) {
+                  yield {
+                    finish_reason: choice.finish_reason,
+                    tool_calls: accumulatedToolCalls.length > 0 ? accumulatedToolCalls : undefined
+                  };
+                }
               }
             } catch (parseError) {
               logDebug('ModelAdapter', 'Failed to parse stream chunk', parseError);
@@ -185,10 +288,27 @@ export abstract class BaseOpenAIAdapter implements ModelAdapter {
           }
         }
       }
+      
+      if (!this.lastUsage) {
+        logWarn('ModelAdapter', 'Stream did not return usage data, using estimation');
+        const tokenCounter = getTokenCounter();
+        const estimatedPrompt = tokenCounter.countMessages(request.messages);
+        const estimatedCompletion = tokenCounter.countTokens(fullContent);
+        this.lastUsage = {
+          prompt_tokens: estimatedPrompt,
+          completion_tokens: estimatedCompletion,
+          total_tokens: estimatedPrompt + estimatedCompletion
+        };
+      }
+      
     } catch (error) {
       logError('ModelAdapter', 'Streaming chat completion failed', error);
       throw this.normalizeError(error);
     }
+  }
+  
+  getLastUsage(): ChatCompletionUsage | undefined {
+    return this.lastUsage;
   }
   
   abstract getContextWindow(model?: string): Promise<number>;

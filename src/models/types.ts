@@ -24,17 +24,19 @@ export interface ChatCompletionChoice {
   finish_reason: 'stop' | 'length' | 'tool_calls' | 'content_filter';
 }
 
+export interface ChatCompletionUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
 export interface ChatCompletionResponse {
   id: string;
   object: 'chat.completion';
   created: number;
   model: string;
   choices: ChatCompletionChoice[];
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
+  usage?: ChatCompletionUsage;
   system_fingerprint?: string;
 }
 
@@ -63,6 +65,13 @@ export interface ModelCapabilities {
   maxOutputTokens: number;
 }
 
+export interface ChatCompletionResult {
+  response: ChatCompletionResponse;
+  content: string;
+  toolCalls?: ToolCall[];
+  usage?: ChatCompletionUsage;
+}
+
 export interface ModelAdapter {
   readonly name: string;
   readonly type: 'lmstudio' | 'ollama' | 'openai' | 'anthropic';
@@ -73,8 +82,11 @@ export interface ModelAdapter {
   getModels(): Promise<ModelInfo[]>;
   getModelCapabilities(model?: string): Promise<ModelCapabilities>;
   chatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse>;
+  chatCompletionWithUsage(
+    request: ChatCompletionRequest
+  ): Promise<ChatCompletionResult>;
   chatCompletionStream(
     request: ChatCompletionRequest
-  ): AsyncIterable<{ content?: string; tool_calls?: ToolCall[]; finish_reason?: string }>;
+  ): AsyncIterable<{ content?: string; tool_calls?: ToolCall[]; finish_reason?: string; usage?: ChatCompletionUsage }>;
   getContextWindow(model?: string): Promise<number>;
 }

@@ -119,6 +119,21 @@ class ModelManager {
         const adapter = this.getActiveAdapter();
         return await adapter.chatCompletion(request);
     }
+    async chatCompletionWithUsage(request) {
+        const adapter = this.getActiveAdapter();
+        if ('chatCompletionWithUsage' in adapter && typeof adapter.chatCompletionWithUsage === 'function') {
+            return await adapter.chatCompletionWithUsage(request);
+        }
+        // Fallback
+        const response = await adapter.chatCompletion(request);
+        const choice = response.choices[0];
+        return {
+            response,
+            content: choice?.message.content || '',
+            toolCalls: choice?.message.tool_calls,
+            usage: response.usage
+        };
+    }
     async *chatCompletionStream(request) {
         const adapter = this.getActiveAdapter();
         yield* adapter.chatCompletionStream(request);

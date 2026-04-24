@@ -1,4 +1,5 @@
 import { Vulnerability } from '../types';
+import { ChatCompletionUsage } from '../models/types';
 export interface AgentResponse {
     content: string;
     toolCalls?: Array<{
@@ -10,6 +11,7 @@ export interface AgentResponse {
         currentTokens: number;
         maxTokens: number;
         usagePercentage: number;
+        actualUsage?: ChatCompletionUsage;
     };
     todoList?: {
         id: string;
@@ -39,11 +41,17 @@ export declare class SecurityAgent {
     private requirementAnalyzer;
     private i18n;
     private initialized;
+    private lastActualUsage?;
     private constructor();
     static getInstance(): SecurityAgent;
     private getSystemPrompt;
     initialize(): Promise<void>;
     processMessage(userMessage: string): Promise<AgentResponse>;
+    private shouldTriggerRequirementAnalysis;
+    private looksLikeTarget;
+    private processWithRequirementAnalysis;
+    private answerClarificationInternal;
+    private runModelInteractionLoop;
     private executeToolCall;
     private extractTargetFromArgs;
     private generateClarificationResponse;

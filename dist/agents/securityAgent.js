@@ -50,6 +50,7 @@ const systemPrompts = {
 - nuclei: 基于模板的漏洞扫描
 - wpscan: WordPress安全扫描
 
+重要：当用户明确指定目标并要求执行扫描时，直接使用工具调用，不要追问额外信息。
 注意：在执行任何工具之前，确保目标已经明确指定。`,
     en: `You are a professional security expert AI assistant focused on vulnerability mining and security assessment.
 
@@ -88,6 +89,7 @@ You have access to the following tools (via function calls):
 - nuclei: Template-based vulnerability scanning
 - wpscan: WordPress security scanning
 
+Important: When user explicitly specifies target and asks to perform scan, use tool calls directly, do not ask for extra information.
 Note: Before executing any tool, ensure the target is clearly specified.`
 };
 class SecurityAgent {
@@ -102,6 +104,7 @@ class SecurityAgent {
     requirementAnalyzer = (0, requirementAnalyzer_1.getRequirementAnalyzer)();
     i18n = (0, i18n_1.getI18n)();
     initialized = false;
+    lastActualUsage;
     constructor() { }
     static getInstance() {
         if (!SecurityAgent.instance) {
@@ -118,9 +121,7 @@ class SecurityAgent {
             return;
         }
         (0, logger_1.logInfo)('SecurityAgent', 'Initializing security agent...');
-        // Initialize context manager
         await this.contextManager.initialize();
-        // Check available model providers
         const providers = await this.modelManager.checkAllProviders();
         const availableProviders = Array.from(providers.entries())
             .filter(([, available]) => available)
@@ -130,13 +131,11 @@ class SecurityAgent {
         }
         else {
             (0, logger_1.logInfo)('SecurityAgent', `Available model providers: ${availableProviders.join(', ')}`);
-            // Switch to first available if current is not available
             const currentProvider = this.modelManager.getActiveProviderName();
             if (!providers.get(currentProvider)) {
                 await this.modelManager.switchProvider(availableProviders[0]);
             }
         }
-        // Add system prompt to context
         this.contextManager.addMessage({
             role: 'system',
             content: this.getSystemPrompt()
@@ -149,25 +148,82 @@ class SecurityAgent {
             await this.initialize();
         }
         (0, logger_1.logInfo)('SecurityAgent', `Processing user message: ${userMessage.substring(0, 100)}...`);
-        // Add user message to context
+        const pendingClarifications = this.requirementAnalyzer.getPendingClarifications();
+        if (pendingClarifications.length > 0) {
+            (0, logger_1.logInfo)('SecurityAgent', `Answering clarification for previous request`);
+            return await this.answerClarificationInternal(userMessage);
+        }
+        if (this.shouldTriggerRequirementAnalysis(userMessage)) {
+            (0, logger_1.logInfo)('SecurityAgent', 'Detected new security scan request, triggering requirement analysis');
+            return await this.processWithRequirementAnalysis(userMessage);
+        }
         this.contextManager.addMessage({
             role: 'user',
             content: userMessage
         });
-        // Check and compress context if needed
-        const compressionResult = await this.contextManager.checkAndCompressIfNeeded();
-        if (compressionResult?.compressed) {
-            (0, logger_1.logInfo)('SecurityAgent', `Context compressed: ${Math.round(compressionResult.compressionRatio * 100)}% reduction`);
+        await this.contextManager.checkAndCompressIfNeeded();
+        return await this.runModelInteractionLoop();
+    }
+    shouldTriggerRequirementAnalysis(message) {
+        const lowerMsg = message.toLowerCase();
+        const scanKeywords = [
+            'scan', '扫描',
+            'penetration', '渗透',
+            'vulnerability', '漏洞',
+            'security', '安全',
+            'audit', '审计',
+            'test', '测试',
+            '检查', 'check',
+            '检测', 'detect'
+        ];
+        for (const keyword of scanKeywords) {
+            if (lowerMsg.includes(keyword)) {
+                return true;
+            }
         }
-        // Analyze requirements
+        if (this.looksLikeTarget(message)) {
+            return true;
+        }
+        return false;
+    }
+    looksLikeTarget(message) {
+        const ipPattern = /\b(?:\d{1,3}\.){3}\d{1,3}(?:\/\d{1,2})?\b/;
+        if (ipPattern.test(message)) {
+            return true;
+        }
+        const domainPattern = /\b[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?\b/;
+        if (domainPattern.test(message)) {
+            const match = message.match(domainPattern);
+            if (match) {
+                const domain = match[0].toLowerCase();
+                if (!domain.endsWith('.txt') &&
+                    !domain.endsWith('.json') &&
+                    !domain.endsWith('.log') &&
+                    !domain.endsWith('.js') &&
+                    !domain.endsWith('.css') &&
+                    !domain.endsWith('.html')) {
+                    return true;
+                }
+            }
+        }
+        const urlPattern = /https?:\/\//;
+        if (urlPattern.test(message)) {
+            return true;
+        }
+        return false;
+    }
+    async processWithRequirementAnalysis(userMessage) {
+        this.contextManager.addMessage({
+            role: 'user',
+            content: userMessage
+        });
+        await this.contextManager.checkAndCompressIfNeeded();
         const analysis = await this.requirementAnalyzer.analyzeRequest(userMessage, this.contextManager.getMessages());
-        // Check for pending clarifications
         const pendingClarifications = this.requirementAnalyzer.getPendingClarifications();
         if (pendingClarifications.length > 0) {
             (0, logger_1.logInfo)('SecurityAgent', `Need ${pendingClarifications.length} clarifications`);
             return this.buildResponse(this.generateClarificationResponse(pendingClarifications), undefined, pendingClarifications);
         }
-        // Generate todo list if needed
         const activeTodo = this.todoManager.getActiveTodoList();
         if (!activeTodo && analysis.isComplete) {
             const todoPrompt = this.requirementAnalyzer.generateTodoListPrompt();
@@ -181,59 +237,105 @@ class SecurityAgent {
                 (0, logger_1.logInfo)('SecurityAgent', `Generated todo list: ${newTodoList.title}`);
             }
         }
-        // Get available tools
-        const tools = this.toolRegistry.getInstalledToolDefinitions();
-        // Prepare messages for completion
-        const messages = this.contextManager.prepareMessagesForCompletion();
-        // Call model
-        const response = await this.modelManager.chatCompletion({
-            model: this.modelManager.getActiveAdapter().defaultModel,
-            messages,
-            tools: tools.length > 0 ? tools : undefined,
-            max_tokens: 2048,
-            temperature: 0.7
+        return await this.runModelInteractionLoop();
+    }
+    async answerClarificationInternal(answer) {
+        const pendingClarifications = this.requirementAnalyzer.getPendingClarifications();
+        if (pendingClarifications.length === 0) {
+            return await this.processMessage(answer);
+        }
+        const clarification = pendingClarifications[0];
+        const analysis = await this.requirementAnalyzer.answerClarification(clarification.id, answer);
+        const isChinese = this.i18n.isChinese();
+        if (!analysis) {
+            const msg = isChinese
+                ? '未找到对应的澄清问题。请重新提供信息。'
+                : 'No matching clarification found. Please provide information again.';
+            return this.buildResponse(msg);
+        }
+        this.contextManager.addMessage({
+            role: 'user',
+            content: answer
         });
-        const choice = response.choices[0];
-        if (!choice) {
-            throw new Error('No response from model');
-        }
-        // Add assistant response to context
-        const assistantMessage = {
+        this.contextManager.addMessage({
             role: 'assistant',
-            content: choice.message.content || ''
-        };
-        if (choice.message.tool_calls && choice.message.tool_calls.length > 0) {
-            assistantMessage.tool_calls = choice.message.tool_calls;
+            content: isChinese ? '收到，我已经记录了这些信息。' : 'Received, I have recorded this information.'
+        });
+        const stillPending = this.requirementAnalyzer.getPendingClarifications();
+        if (stillPending.length > 0) {
+            return this.buildResponse(this.generateClarificationResponse(stillPending), undefined, stillPending);
         }
-        this.contextManager.addMessage(assistantMessage);
-        // Handle tool calls
-        const toolCalls = choice.message.tool_calls;
-        let toolResults = [];
-        if (toolCalls && toolCalls.length > 0) {
-            (0, logger_1.logInfo)('SecurityAgent', `Model requested ${toolCalls.length} tool call(s)`);
-            for (const toolCall of toolCalls) {
-                const result = await this.executeToolCall(toolCall);
-                toolResults.push({
-                    toolCallId: toolCall.id,
-                    toolName: toolCall.function.name,
-                    result
-                });
-                // Add tool result to context
-                this.contextManager.addMessage({
-                    role: 'tool',
-                    tool_call_id: toolCall.id,
-                    name: toolCall.function.name,
-                    content: result
-                });
+        const todoPrompt = this.requirementAnalyzer.generateTodoListPrompt();
+        const tools = this.toolRegistry.getInstalledToolDefinitions();
+        const todoList = await this.todoManager.generateTodoListFromContext({
+            context: todoPrompt,
+            tools: tools.length > 0 ? tools : undefined
+        });
+        if (todoList) {
+            this.todoManager.setActiveTodoList(todoList.id);
+        }
+        return await this.runModelInteractionLoop();
+    }
+    async runModelInteractionLoop() {
+        const maxIterations = 10;
+        let iterations = 0;
+        let finalContent = '';
+        let finalToolCalls;
+        while (iterations < maxIterations) {
+            iterations++;
+            (0, logger_1.logInfo)('SecurityAgent', `Model interaction loop - iteration ${iterations}`);
+            const tools = this.toolRegistry.getAllToolDefinitions();
+            const messages = this.contextManager.prepareMessagesForCompletion();
+            const result = await this.modelManager.chatCompletionWithUsage({
+                model: this.modelManager.getActiveAdapter().defaultModel,
+                messages,
+                tools: tools.length > 0 ? tools : undefined,
+                max_tokens: 2048,
+                temperature: 0.7
+            });
+            this.lastActualUsage = result.usage;
+            if (result.usage) {
+                (0, logger_1.logInfo)('SecurityAgent', `API actual usage: prompt=${result.usage.prompt_tokens}, completion=${result.usage.completion_tokens}, total=${result.usage.total_tokens}`);
             }
+            const choice = result.response.choices[0];
+            if (!choice) {
+                throw new Error('No response from model');
+            }
+            finalContent = result.content;
+            const assistantMessage = {
+                role: 'assistant',
+                content: result.content || ''
+            };
+            if (result.toolCalls && result.toolCalls.length > 0) {
+                assistantMessage.tool_calls = result.toolCalls;
+                finalToolCalls = result.toolCalls.map(tc => ({
+                    id: tc.id,
+                    name: tc.function.name,
+                    arguments: JSON.parse(tc.function.arguments || '{}')
+                }));
+            }
+            this.contextManager.addMessage(assistantMessage);
+            const toolCalls = result.toolCalls;
+            if (toolCalls && toolCalls.length > 0) {
+                (0, logger_1.logInfo)('SecurityAgent', `Model requested ${toolCalls.length} tool call(s)`);
+                for (const toolCall of toolCalls) {
+                    const toolResult = await this.executeToolCall(toolCall);
+                    this.contextManager.addMessage({
+                        role: 'tool',
+                        tool_call_id: toolCall.id,
+                        name: toolCall.function.name,
+                        content: toolResult
+                    });
+                }
+                await this.contextManager.checkAndCompressIfNeeded();
+                continue;
+            }
+            break;
         }
-        // Check context again after adding responses
-        await this.contextManager.checkAndCompressIfNeeded();
-        return this.buildResponse(choice.message.content || '', toolCalls?.map(tc => ({
-            id: tc.id,
-            name: tc.function.name,
-            arguments: JSON.parse(tc.function.arguments)
-        })));
+        if (iterations >= maxIterations) {
+            (0, logger_1.logWarn)('SecurityAgent', 'Reached max iterations in model interaction loop');
+        }
+        return this.buildResponse(finalContent, finalToolCalls);
     }
     async executeToolCall(toolCall) {
         const toolName = toolCall.function.name;
@@ -250,11 +352,12 @@ class SecurityAgent {
             const execution = await this.toolExecutor.executeTool(toolName, args, {
                 onLog: (log) => {
                     (0, logger_1.logDebug)('SecurityAgent', `[${log.source}] ${log.message.substring(0, 100)}...`);
+                },
+                onOutput: (data) => {
+                    (0, logger_1.logDebug)('SecurityAgent', `[${toolName}] ${data.substring(0, 100)}...`);
                 }
             });
-            // Analyze for vulnerabilities
             if (execution.status === 'completed') {
-                // Try to extract target from arguments
                 const target = this.extractTargetFromArgs(args) || 'unknown';
                 await this.vulnerabilityAnalyzer.analyzeToolOutput(execution, target);
             }
@@ -314,13 +417,19 @@ class SecurityAgent {
                 }
             };
         }
+        let currentTokens = contextInfo.currentTokens;
+        let maxTokens = contextInfo.maxTokens;
+        if (this.lastActualUsage) {
+            currentTokens = this.lastActualUsage.total_tokens;
+        }
         return {
             content,
             toolCalls,
             contextInfo: {
-                currentTokens: contextInfo.currentTokens,
-                maxTokens: contextInfo.maxTokens,
-                usagePercentage: contextInfo.currentTokens / contextInfo.maxTokens
+                currentTokens,
+                maxTokens,
+                usagePercentage: currentTokens / maxTokens,
+                actualUsage: this.lastActualUsage
             },
             todoList: todoListInfo,
             vulnerabilities: vulnerabilities.length > 0 ? vulnerabilities : undefined,
@@ -334,14 +443,13 @@ class SecurityAgent {
             return false;
         }
         (0, logger_1.logInfo)('SecurityAgent', `Executing todo list: ${activeTodo.title}`);
-        const tools = this.toolRegistry.getInstalledToolDefinitions();
+        const tools = this.toolRegistry.getAllToolDefinitions();
         const success = await this.todoExecutor.executeList(activeTodo.id, {
             onItemStart: (item) => {
                 (0, logger_1.logInfo)('SecurityAgent', `Starting task: ${item.content}`);
             },
             onItemComplete: (item, result) => {
                 (0, logger_1.logInfo)('SecurityAgent', `Completed task: ${item.content}`);
-                // Add result to context
                 this.contextManager.addMessage({
                     role: 'system',
                     content: `Task completed: ${item.content}\nResult: ${result.result?.substring(0, 500) || '(no result)'}`
@@ -372,7 +480,6 @@ class SecurityAgent {
                 : 'No matching clarification found. Please provide information again.';
             return this.buildResponse(msg);
         }
-        // Add to context
         this.contextManager.addMessage({
             role: 'user',
             content: answer
@@ -385,7 +492,6 @@ class SecurityAgent {
         if (pending.length > 0) {
             return this.buildResponse(this.generateClarificationResponse(pending), undefined, pending);
         }
-        // All clarifications answered, generate todo list
         const todoPrompt = this.requirementAnalyzer.generateTodoListPrompt();
         const tools = this.toolRegistry.getInstalledToolDefinitions();
         const todoList = await this.todoManager.generateTodoListFromContext({
@@ -395,15 +501,7 @@ class SecurityAgent {
         if (todoList) {
             this.todoManager.setActiveTodoList(todoList.id);
         }
-        const baseMsg = isChinese
-            ? '好的，我已经收集到了所有需要的信息。我已经为你生成了一个任务计划。'
-            : 'Good, I have collected all the necessary information. I have generated a task plan for you.';
-        const todoMsg = todoList
-            ? (isChinese
-                ? `\n\n任务计划: ${todoList.title}\n包含 ${todoList.items.length} 个任务。`
-                : `\n\nTask plan: ${todoList.title}\nContains ${todoList.items.length} tasks.`)
-            : '';
-        return this.buildResponse(baseMsg + todoMsg);
+        return await this.runModelInteractionLoop();
     }
     getContextStatus() {
         return this.contextManager.getStatusDisplay();
@@ -416,7 +514,7 @@ class SecurityAgent {
         this.vulnerabilityAnalyzer.clearVulnerabilities();
         this.todoManager.clearAll();
         this.requirementAnalyzer.clearCurrentAnalysis();
-        // Re-add system prompt
+        this.lastActualUsage = undefined;
         this.contextManager.addMessage({
             role: 'system',
             content: this.getSystemPrompt()

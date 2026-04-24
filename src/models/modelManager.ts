@@ -1,7 +1,15 @@
-import { ModelAdapter, ChatCompletionRequest, ChatCompletionResponse, ModelInfo, ModelCapabilities } from './types';
+import { 
+  ModelAdapter, 
+  ChatCompletionRequest, 
+  ChatCompletionResponse, 
+  ModelInfo, 
+  ModelCapabilities,
+  ChatCompletionResult,
+  ChatCompletionUsage
+} from './types';
 import { LMStudioAdapter } from './lmstudioAdapter';
 import { OllamaAdapter } from './ollamaAdapter';
-import { ModelProvider } from '../types';
+import { ModelProvider, ToolCall } from '../types';
 import { getConfig, getActiveProvider, updateActiveProvider, addModelProvider, removeModelProvider } from '../config';
 import { logInfo, logError, logWarn, logDebug } from '../utils/logger';
 
@@ -135,9 +143,25 @@ export class ModelManager {
     return await adapter.chatCompletion(request);
   }
   
+  async chatCompletionWithUsage(request: ChatCompletionRequest): Promise<ChatCompletionResult> {
+    const adapter = this.getActiveAdapter();
+    if ('chatCompletionWithUsage' in adapter && typeof adapter.chatCompletionWithUsage === 'function') {
+      return await adapter.chatCompletionWithUsage(request);
+    }
+    // Fallback
+    const response = await adapter.chatCompletion(request);
+    const choice = response.choices[0];
+    return {
+      response,
+      content: choice?.message.content || '',
+      toolCalls: choice?.message.tool_calls,
+      usage: response.usage
+    };
+  }
+  
   async *chatCompletionStream(
     request: ChatCompletionRequest
-  ): AsyncIterable<{ content?: string; tool_calls?: unknown[]; finish_reason?: string }> {
+  ): AsyncIterable<{ content?: string; tool_calls?: ToolCall[]; finish_reason?: string; usage?: ChatCompletionUsage }> {
     const adapter = this.getActiveAdapter();
     yield* adapter.chatCompletionStream(request);
   }
